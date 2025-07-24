@@ -1,3 +1,5 @@
 /venv
+/venv-wsl
 /dataset/*
 /__pycache__/
+.env

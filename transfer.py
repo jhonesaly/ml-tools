@@ -9,51 +9,55 @@ from keras.models import Model
 from keras.layers import Dense
 import matplotlib.pyplot as plt
 
-# Diagnóstico completo da GPU
-print("=== DIAGNÓSTICO GPU ===")
-print("TensorFlow version:", tf.__version__)
-print("TensorFlow built with CUDA:", tf.test.is_built_with_cuda())
+import tensorflow as tf
 
-# Tentar obter informações de build (pode falhar em versões CPU-only)
-try:
-    build_info = tf.sysconfig.get_build_info()
-    print("CUDA version:", build_info.get('cuda_version', 'N/A'))
-    print("cuDNN version:", build_info.get('cudnn_version', 'N/A'))
-except Exception as e:
-    print("Erro ao obter build info:", e)
-
-# Verificar dispositivos físicos
-physical_devices = tf.config.list_physical_devices()
-print("Todos os dispositivos físicos:", physical_devices)
-
-gpu_devices = tf.config.list_physical_devices('GPU')
-print("GPU disponível:", gpu_devices)
-print("Usando GPU:", len(gpu_devices) > 0)
-
-# Teste básico da GPU se disponível
-if len(gpu_devices) > 0:
-    print("GPU detectada! Testando operação...")
+def verificar_gpu_tensorflow():
+    """
+    Verifica a disponibilidade de GPU no TensorFlow,
+    exibe informações de build, lista dispositivos físicos,
+    testa uma operação simples na GPU (se disponível) e configura
+    o crescimento de memória da GPU.
+    """
+    # Tentar obter informações de build (pode falhar em versões CPU-only)
     try:
-        with tf.device('/GPU:0'):
-            a = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-            b = tf.constant([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
-            c = tf.matmul(a, b)
-            print("Teste GPU bem-sucedido!")
+        build_info = tf.sysconfig.get_build_info()
+        print("CUDA version:", build_info.get('cuda_version', 'N/A'))
+        print("cuDNN version:", build_info.get('cudnn_version', 'N/A'))
     except Exception as e:
-        print(f"Erro no teste GPU: {e}")
+        print("Erro ao obter build info:", e)
 
-# Configurar uso de GPU
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-    try:
-        # Configurar crescimento de memória
-        for gpu in gpus:
-            tf.config.experimental.set_gpu_growth(gpu, True)
-        print(f"Usando GPU: {len(gpus)} dispositivo(s)")
-    except RuntimeError as e:
-        print(f"Erro ao configurar GPU: {e}")
-else:
-    print("Nenhuma GPU detectada, usando CPU")
+    # Verificar dispositivos físicos
+    physical_devices = tf.config.list_physical_devices()
+    print("Todos os dispositivos físicos:", physical_devices)
+
+    gpu_devices = tf.config.list_physical_devices('GPU')
+    print("GPU disponível:", gpu_devices)
+    print("Usando GPU:", len(gpu_devices) > 0)
+
+    # Teste básico da GPU se disponível
+    if len(gpu_devices) > 0:
+        print("GPU detectada! Testando operação...")
+        try:
+            with tf.device('/GPU:0'):
+                a = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+                b = tf.constant([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+                c = tf.matmul(a, b)
+                print("Teste GPU bem-sucedido! Resultado:\n", c.numpy())
+        except Exception as e:
+            print(f"Erro no teste GPU: {e}")
+
+    # Configurar uso de GPU
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        try:
+            # Configurar crescimento de memória
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            print(f"Usando GPU: {len(gpus)} dispositivo(s)")
+        except RuntimeError as e:
+            print(f"Erro ao configurar GPU: {e}")
+    else:
+        print("Nenhuma GPU detectada, usando CPU")
 
 
 # Helper function to load image and return it and input vector
