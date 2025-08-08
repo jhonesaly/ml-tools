@@ -32,3 +32,12 @@ Crie um ambiente virtual e o ative:
 python3 -m venv venv-wsl
 source venv-wsl/bin/activate
 ```
+
+## Imagens e Rotulação
+
+Fontes de datasets:
+- https://universe.roboflow.com/
+- https://www.kaggle.com/datasets
+- https://storage.googleapis.com/openimages/web/index.html
+
+Se necessário marcar as imagens manualmente, use https://www.makesense.ai/
